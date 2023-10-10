@@ -127,7 +127,7 @@ export const Lead: Pipeline = {
                 url: Joi.string(),
                 won_opportunity_value_summary: Joi.string(),
                 custom: Joi.array().items({
-                    field_id: Joi.string(),
+                    id: Joi.string(),
                     value: Joi.string(),
                 }),
             }),
@@ -202,7 +202,7 @@ export const Lead: Pipeline = {
                 type: 'RECORD',
                 mode: 'REPEATED',
                 fields: [
-                    { name: 'field_id', type: 'STRING' },
+                    { name: 'id', type: 'STRING' },
                     { name: 'value', type: 'STRING' },
                 ],
             },
