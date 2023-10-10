@@ -2,7 +2,7 @@ import * as pipelines from './pipeline.const';
 import { runPipeline } from './pipeline.service';
 
 it('pipeline', async () => {
-    return runPipeline(pipelines.Opportunity, {
+    return runPipeline(pipelines.CustomActivity, {
         start: '2023-09-01',
         end: '2023-10-01',
     })

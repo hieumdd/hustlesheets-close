@@ -13,6 +13,8 @@ const client = axios.create({
     paramsSerializer: { serialize: (params) => qs.stringify(params, { arrayFormat: 'comma' }) },
 });
 
+export type GetExtractStream = (options: GetResourceStreamOptions) => Promise<Readable>;
+
 type GetResourceOptions = { uri: string; params: object };
 
 const getResource = ({ uri, params }: GetResourceOptions) => {
@@ -60,6 +62,26 @@ export const getResourceStream = ({ uri, paramsBuilder }: GetResourceStreamConfi
             { concurrency: 10 },
         )
             .then(() => stream.push(null))
+            .catch((error) => stream.emit('error', error));
+
+        return stream;
+    };
+};
+
+type GetDimensionStreamConfig = { uri: string };
+
+export const getDimensionStream = ({ uri }: GetDimensionStreamConfig) => {
+    return async () => {
+        type GetDimensionResponse = { data: object[] };
+
+        const stream = new Readable({ objectMode: true, read: () => {} });
+
+        client
+            .request<GetDimensionResponse>({ method: 'GET', url: uri })
+            .then(({ data }) => {
+                data.data.forEach((row) => stream.push(row));
+                stream.push(null);
+            })
             .catch((error) => stream.emit('error', error));
 
         return stream;

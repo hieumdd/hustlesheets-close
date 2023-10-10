@@ -1,12 +1,12 @@
 import { Transform } from 'node:stream';
 
 import { CreateLoadStreamConfig } from '../bigquery.service';
-import { getResourceStream } from '../close/close.service';
+import { GetExtractStream, getDimensionStream, getResourceStream } from '../close/close.service';
 import { Joi, timestamp, transformCustomFields, transformValidation } from './transform.utils';
 
 export type Pipeline = {
     name: string;
-    getExtractStream: ReturnType<typeof getResourceStream>;
+    getExtractStream: GetExtractStream;
     transforms: Transform[];
     loadConfig: CreateLoadStreamConfig;
 };
@@ -327,5 +327,75 @@ export const Opportunity: Pipeline = {
             },
         ],
         writeDisposition: 'WRITE_APPEND',
+    },
+};
+
+export const CustomActivity: Pipeline = {
+    name: 'CustomActivity',
+    getExtractStream: getDimensionStream({ uri: 'custom_activity' }),
+    transforms: [
+        transformValidation(
+            Joi.object({
+                id: Joi.string(),
+                created_by: Joi.string(),
+                contact_id: Joi.string(),
+                lead_id: Joi.string(),
+                status_id: Joi.string(),
+                updated_by: Joi.string(),
+                user_id: Joi.string(),
+                annualized_expected_value: Joi.number(),
+                annualized_value: Joi.number(),
+                confidence: Joi.number(),
+                date_created: timestamp,
+                date_lost: timestamp,
+                date_updated: timestamp,
+                date_won: timestamp,
+                expected_value: Joi.number(),
+                integration_links: Joi.array().items({
+                    name: Joi.string(),
+                    url: Joi.string(),
+                }),
+                note: Joi.string(),
+                organization_id: Joi.string(),
+                status_display_name: Joi.string(),
+                value: Joi.number(),
+                value_currency: Joi.string(),
+                value_formatted: Joi.string(),
+                value_period: Joi.string(),
+                custom: Joi.array().items({
+                    id: Joi.string(),
+                    value: Joi.string(),
+                }),
+            }),
+        ),
+    ],
+    loadConfig: {
+        schema: [
+            { name: 'api_create_only', type: 'BOOLEAN' },
+            { name: 'created_by', type: 'STRING' },
+            { name: 'date_created', type: 'TIMESTAMP' },
+            { name: 'date_updated', type: 'TIMESTAMP' },
+            { name: 'description', type: 'STRING' },
+            {
+                name: 'fields',
+                type: 'RECORD',
+                mode: 'REPEATED',
+                fields: [
+                    { name: 'accepts_multiple_values', type: 'BOOLEAN' },
+                    { name: 'back_reference_is_visible', type: 'BOOLEAN' },
+                    { name: 'id', type: 'STRING' },
+                    { name: 'is_shared', type: 'BOOLEAN' },
+                    { name: 'name', type: 'STRING' },
+                    { name: 'referenced_custom_type_id', type: 'STRING' },
+                    { name: 'required', type: 'BOOLEAN' },
+                    { name: 'type', type: 'STRING' },
+                ],
+            },
+            { name: 'id', type: 'STRING' },
+            { name: 'name', type: 'STRING' },
+            { name: 'organization_id', type: 'STRING' },
+            { name: 'updated_by', type: 'STRING' },
+        ],
+        writeDisposition: 'WRITE_TRUNCATE',
     },
 };
