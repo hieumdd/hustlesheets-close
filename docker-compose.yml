@@ -1,0 +1,10 @@
+services:
+  app:
+    image: hustlesheets-close
+    build: .
+    container_name: hustlesheets-close
+    volumes:
+      - ./${GOOGLE_APPLICATION_CREDENTIALS}:/tmp/{GOOGLE_APPLICATION_CREDENTIALS}
+    environment:
+      GOOGLE_APPLICATION_CREDENTIALS: /tmp/{GOOGLE_APPLICATION_CREDENTIALS}
+    env_file: .env
