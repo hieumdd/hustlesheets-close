@@ -441,3 +441,45 @@ export const LeadCustomField: Pipeline = {
         writeDisposition: 'WRITE_TRUNCATE',
     },
 };
+
+export const OpportunityCustomField: Pipeline = {
+    name: 'OpportunityCustomField',
+    getExtractStream: getDimensionStream({ uri: 'custom_field/opportunity' }),
+    transforms: [
+        transformValidation(
+            Joi.object({
+                referenced_custom_type_id: Joi.string(),
+                description: Joi.string(),
+                accepts_multiple_values: Joi.boolean(),
+                is_shared: Joi.boolean(),
+                id: Joi.string(),
+                created_by: Joi.string(),
+                organization_id: Joi.string(),
+                name: Joi.string(),
+                date_updated: timestamp,
+                date_created: timestamp,
+                choices: Joi.array().items(Joi.string()),
+                type: Joi.string(),
+                updated_by: Joi.string(),
+            }),
+        ),
+    ],
+    loadConfig: {
+        schema: [
+            { name: 'referenced_custom_type_id', type: 'STRING' },
+            { name: 'description', type: 'STRING' },
+            { name: 'accepts_multiple_values', type: 'BOOLEAN' },
+            { name: 'is_shared', type: 'BOOLEAN' },
+            { name: 'id', type: 'STRING' },
+            { name: 'created_by', type: 'STRING' },
+            { name: 'organization_id', type: 'STRING' },
+            { name: 'name', type: 'STRING' },
+            { name: 'date_updated', type: 'TIMESTAMP' },
+            { name: 'date_created', type: 'TIMESTAMP' },
+            { name: 'choices', type: 'STRING', mode: 'REPEATED' },
+            { name: 'type', type: 'STRING' },
+            { name: 'updated_by', type: 'STRING' },
+        ],
+        writeDisposition: 'WRITE_TRUNCATE',
+    },
+};
