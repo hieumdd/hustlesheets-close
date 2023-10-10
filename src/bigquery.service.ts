@@ -15,16 +15,11 @@ export type CreateLoadStreamConfig = {
 export const createLoadStream = (options: CreateLoadStreamConfig, table: string) => {
     const { schema, writeDisposition } = options;
 
-    const [_table, _schema] =
-        writeDisposition === 'WRITE_TRUNCATE'
-            ? [table, schema]
-            : [`p_${table}`, [...schema, { name: '_batched_at', type: 'TIMESTAMP' }]];
-
     return client
         .dataset(dataset)
-        .table(_table)
+        .table(writeDisposition === 'WRITE_TRUNCATE' ? table : `p_${table}`)
         .createWriteStream({
-            schema: { fields: _schema },
+            schema: { fields: [...schema, { name: '_batched_at', type: 'TIMESTAMP' }] },
             sourceFormat: 'NEWLINE_DELIMITED_JSON',
             createDisposition: 'CREATE_IF_NEEDED',
             writeDisposition,
