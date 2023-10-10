@@ -1,4 +1,3 @@
-import 'dotenv/config';
 import { program } from 'commander';
 
 import { logger } from './logging.service';
@@ -14,22 +13,24 @@ import { RunPipelineBodySchema } from './pipeline/pipeline.request.dto';
     });
 });
 
-program
-    .requiredOption(
-        '-p, --pipeline <name>',
-        `[Required] Pipeline name, allowed values are ${JSON.stringify(Object.keys(pipelines))}`,
-    )
-    .option(
-        '-s, --start <start>',
-        `for resource based pipelines, in YYYY-MM-DD format. If left blank then it will default to config's settings`,
-    )
-    .option(
-        '-e, --end <end>',
-        `for resource based pipelines, in YYYY-MM-DD format. If left blank then it will default to config's settings`,
-    );
-program.parse(process.argv);
-
 (async () => {
+    program
+        .requiredOption(
+            '-p, --pipeline <name>',
+            `[Required] Pipeline name, allowed values are ${JSON.stringify(
+                Object.keys(pipelines),
+            )}`,
+        )
+        .option(
+            '-s, --start <start>',
+            `for resource based pipelines, in YYYY-MM-DD format. If left blank then it will default to config's settings`,
+        )
+        .option(
+            '-e, --end <end>',
+            `for resource based pipelines, in YYYY-MM-DD format. If left blank then it will default to config's settings`,
+        );
+    program.parse(process.argv);
+
     const opts = program.opts();
 
     logger.debug({ fn: 'index', opts });
@@ -42,6 +43,7 @@ program.parse(process.argv);
     }
 
     logger.info({ fn: 'index', value, status: 'start' });
-    await runPipeline(pipelines[value.pipeline], value);
-    logger.info({ fn: 'index', value, status: 'done' });
+    await runPipeline(pipelines[value.pipeline], value)
+        .then(() => logger.info({ fn: 'index', value, status: 'done' }))
+        .catch((error) => logger.error({ fn: 'index', error }));
 })();
