@@ -5,6 +5,7 @@ import { logger } from '../logging.service';
 import { createLoadStream } from '../bigquery.service';
 import { RunPipelineOptions } from './pipeline.request.dto';
 import * as pipelines from './pipeline.const';
+import { runJob } from '../cloud-run.service';
 
 export const runPipeline = async (_pipeline: pipelines.Pipeline, options: RunPipelineOptions) => {
     logger.info({ fn: 'runPipeline', pipeline: _pipeline.name, options });
@@ -15,4 +16,15 @@ export const runPipeline = async (_pipeline: pipelines.Pipeline, options: RunPip
         ndjson.stringify(),
         createLoadStream(_pipeline.loadConfig, _pipeline.name),
     ]).then(() => options);
+};
+
+export const createPipelineRuns = async (options: RunPipelineOptions) => {
+    logger.info({ fn: 'createRunPipelineExecutions', options });
+
+    return Promise.all(
+        Object.keys(pipelines).map((key) => {
+            const args = ['dist/index.js', `-p ${key}`, `-s ${options.start}`, `-e ${options.end}`];
+            return runJob({ args });
+        }),
+    ).then(() => options);
 };
