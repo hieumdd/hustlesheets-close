@@ -3,9 +3,12 @@ import axios from 'axios';
 import qs from 'query-string';
 import pMap from 'p-map';
 import { range } from 'lodash';
+import { DateTime, Interval } from 'luxon';
 
 import { logger } from '../logging.service';
 import { getConfig } from '../config.service';
+
+const DATE_FORMAT = 'yyyy-MM-dd';
 
 const client = axios.create({
     baseURL: 'https://api.close.com/api/v1',
@@ -71,20 +74,38 @@ export const getActivityStream = ({ uri, paramsBuilder }: GetIncrementalStreamCo
         const stream = new Readable({ objectMode: true, read: () => {} });
 
         const limit = 100;
-        const params = paramsBuilder(options);
+        const params = Interval.fromDateTimes(
+            DateTime.fromFormat(options.start, DATE_FORMAT),
+            DateTime.fromFormat(options.end, DATE_FORMAT),
+        )
+            .splitBy({ day: 1 })
+            .map((date) => ({
+                start: (<DateTime>date.start).toFormat(DATE_FORMAT),
+                end: (<DateTime>date.end).toFormat(DATE_FORMAT),
+            }))
+            .map(paramsBuilder);
 
-        const get = (skip = 0) => {
-            getResource({ uri, params: { ...params, _limit: limit, _skip: skip } }).then(
-                ({ data }) => {
-                    count = count + data.data.length;
-                    logger.debug({ fn: 'getActivityStream', progress: count });
-                    data.data.forEach((row) => stream.push(row));
-                    data.has_more ? get(skip + limit) : stream.push(null);
-                },
-            );
-        };
+        pMap(
+            params,
+            async (params) => {
+                const get = async (skip = 0): Promise<any> => {
+                    return getResource({
+                        uri,
+                        params: { ...params, _limit: limit, _skip: skip },
+                    }).then(({ data }) => {
+                        count = count + data.data.length;
+                        logger.debug({ fn: 'getActivityStream', progress: count });
+                        data.data.forEach((row) => stream.push(row));
+                        return data.has_more ? get(skip + limit) : undefined;
+                    });
+                };
 
-        get();
+                return get();
+            },
+            { concurrency: 10 },
+        )
+            .then(() => stream.push(null))
+            .catch((error) => stream.emit('error', error));
 
         return stream;
     };
