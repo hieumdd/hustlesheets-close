@@ -3,7 +3,9 @@
     "version": "0.1.0",
     "dependencies": {
         "@google-cloud/bigquery": "^7.3.0",
+        "@google-cloud/run": "^1.0.2",
         "axios": "^1.5.1",
+        "commander": "^11.0.0",
         "joi": "^17.10.2",
         "lodash": "^4.17.21",
         "luxon": "^3.4.3",
