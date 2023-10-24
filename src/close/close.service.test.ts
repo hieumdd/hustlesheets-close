@@ -1,15 +1,15 @@
-import { getResourceStream } from './close.service';
+import { getIncrementalStream } from './close.service';
 
-it('getResourceStream', (done) => {
-    const extractStream = getResourceStream({
+it('getIncrementalStream', (done) => {
+    getIncrementalStream({
         uri: 'lead',
         paramsBuilder: () => ({
             query: `sort:updated date_updated >= 2023-10-08 date_updated <= 2023-10-09`,
         }),
-    })({});
-
-    extractStream
-        .on('data', (row) => console.log(row))
-        .on('close', done)
-        .on('error', (error) => done(error));
+    })({ start: '', end: '' }).then((stream) => {
+        stream
+            .on('data', (row) => console.log(row))
+            .on('close', done)
+            .on('error', (error) => done(error));
+    });
 });
