@@ -3,6 +3,7 @@ import ndjson from 'ndjson';
 
 import { logger } from '../logging.service';
 import { createLoadStream } from '../bigquery.service';
+import { Subcommand } from '../subcommand.enum';
 import { RunPipelineOptions } from './pipeline.request.dto';
 import * as pipelines from './pipeline.const';
 import { runJob } from '../cloud-run.service';
@@ -23,7 +24,13 @@ export const createPipelineRuns = async (options: RunPipelineOptions) => {
 
     return Promise.all(
         Object.keys(pipelines).map((key) => {
-            const args = ['dist/index.js', `-p ${key}`, `-s ${options.start}`, `-e ${options.end}`];
+            const args = [
+                'dist/index.js',
+                Subcommand.EXECUTE,
+                `-p ${key}`,
+                `-s ${options.start}`,
+                `-e ${options.end}`,
+            ];
             return runJob({ args });
         }),
     ).then(() => options);
