@@ -1,25 +1,20 @@
 import { Transform } from 'node:stream';
 import JoiDefault, { Schema } from 'joi';
 import { chain } from 'lodash';
-
-import dayjs from '../dayjs';
+import { DateTime } from 'luxon';
 
 export const Joi = JoiDefault.defaults((schema) => schema.empty('').allow(null));
 
-export const timestamp = Joi.custom((value) => (value ? dayjs(value).toISOString() : null));
+export const timestamp = Joi.custom((value) => (value ? DateTime.fromISO(value).toJSON() : null));
 
 export const transformValidation = (schema: Schema) => {
     return new Transform({
         objectMode: true,
         transform: (row, _, callback) => {
-            const { value, error } = schema.validate(row, {
-                stripUnknown: true,
-                abortEarly: false,
-            });
-
-            error
-                ? callback(error)
-                : callback(null, { ...value, _batched_at: dayjs.utc().toISOString() });
+            schema
+                .validateAsync(row, { stripUnknown: true, abortEarly: false })
+                .then((value) => callback(null, { ...value, _batched_at: DateTime.utc().toJSON() }))
+                .catch((error) => callback(error));
         },
     });
 };
