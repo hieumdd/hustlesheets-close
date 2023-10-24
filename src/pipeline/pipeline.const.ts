@@ -1,12 +1,7 @@
 import { Transform } from 'node:stream';
 
 import { CreateLoadStreamConfig } from '../bigquery.service';
-import {
-    GetExtractStream,
-    getResourceStream,
-    getActivityStream,
-    getDimensionStream,
-} from '../close/close.service';
+import { GetExtractStream, getIncrementalStream, getDimensionStream } from '../close/close.service';
 import { Joi, timestamp, transformCustomFields, transformValidation } from './transform.utils';
 
 export type Pipeline = {
@@ -18,7 +13,7 @@ export type Pipeline = {
 
 export const Lead: Pipeline = {
     name: 'Lead',
-    getExtractStream: getResourceStream({
+    getExtractStream: getIncrementalStream({
         uri: 'lead',
         paramsBuilder: ({ start, end }) => ({
             _fields: [
@@ -218,7 +213,7 @@ export const Lead: Pipeline = {
 
 export const Opportunity: Pipeline = {
     name: 'Opportunity',
-    getExtractStream: getResourceStream({
+    getExtractStream: getIncrementalStream({
         uri: 'opportunity',
         paramsBuilder: ({ start, end }) => ({
             _fields: [
@@ -337,7 +332,7 @@ export const Opportunity: Pipeline = {
 
 export const ActivityCustom: Pipeline = {
     name: 'ActivityCustom',
-    getExtractStream: getActivityStream({
+    getExtractStream: getIncrementalStream({
         uri: 'activity/custom',
         paramsBuilder: ({ start, end }) => ({
             _fields: [
@@ -424,7 +419,7 @@ export const ActivityCustom: Pipeline = {
 
 export const ActivityCall: Pipeline = {
     name: 'ActivityCall',
-    getExtractStream: getActivityStream({
+    getExtractStream: getIncrementalStream({
         uri: 'activity/call',
         paramsBuilder: ({ start, end }) => ({
             _fields: [
