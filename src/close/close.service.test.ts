@@ -1,7 +1,7 @@
-import { getResourceStream } from './close.service';
+import { getActivityStream } from './close.service';
 
 it('getResourceStream', (done) => {
-    const extractStream = getResourceStream({
+    const extractStream = getActivityStream({
         uri: 'lead',
         paramsBuilder: () => ({
             query: `sort:updated date_updated >= 2023-10-08 date_updated <= 2023-10-09`,

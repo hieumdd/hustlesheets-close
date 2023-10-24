@@ -13,7 +13,7 @@ const client = axios.create({
     paramsSerializer: { serialize: (params) => qs.stringify(params, { arrayFormat: 'comma' }) },
 });
 
-export type GetExtractStream = (options: GetResourceStreamOptions) => Promise<Readable>;
+export type GetExtractStream = (options: GetIncrementalStreamOptions) => Promise<Readable>;
 
 type GetResourceOptions = { uri: string; params: object };
 
@@ -23,15 +23,15 @@ const getResource = ({ uri, params }: GetResourceOptions) => {
     return client.request<GetResourceResponse>({ method: 'GET', url: uri, params });
 };
 
-export type GetResourceStreamOptions = { start?: string; end?: string };
+export type GetIncrementalStreamOptions = { start: string; end: string };
 
-export type GetResourceStreamConfig = {
+export type GetIncrementalStreamConfig = {
     uri: string;
-    paramsBuilder: (options: GetResourceStreamOptions) => object;
+    paramsBuilder: (options: GetIncrementalStreamOptions) => object;
 };
 
-export const getResourceStream = ({ uri, paramsBuilder }: GetResourceStreamConfig) => {
-    return async (options: GetResourceStreamOptions) => {
+export const getResourceStream = ({ uri, paramsBuilder }: GetIncrementalStreamConfig) => {
+    return async (options: GetIncrementalStreamOptions) => {
         let count = 0;
         const stream = new Readable({ objectMode: true, read: () => {} });
 
@@ -48,9 +48,6 @@ export const getResourceStream = ({ uri, paramsBuilder }: GetResourceStreamConfi
                 return getResource({ uri, params: { ...params, _limit: limit, _skip: skip } }).then(
                     ({ data }) => {
                         count = count + data.data.length;
-                        if (count === 44800) {
-                            console.log(123);
-                        }
                         logger.debug({
                             fn: 'getResourceStream',
                             progress: `${count}/${data.total_results}`,
@@ -63,6 +60,31 @@ export const getResourceStream = ({ uri, paramsBuilder }: GetResourceStreamConfi
         )
             .then(() => stream.push(null))
             .catch((error) => stream.emit('error', error));
+
+        return stream;
+    };
+};
+
+export const getActivityStream = ({ uri, paramsBuilder }: GetIncrementalStreamConfig) => {
+    return async (options: GetIncrementalStreamOptions) => {
+        let count = 0;
+        const stream = new Readable({ objectMode: true, read: () => {} });
+
+        const limit = 100;
+        const params = paramsBuilder(options);
+
+        const get = (skip = 0) => {
+            getResource({ uri, params: { ...params, _limit: limit, _skip: skip } }).then(
+                ({ data }) => {
+                    count = count + data.data.length;
+                    logger.debug({ fn: 'getActivityStream', progress: count });
+                    data.data.forEach((row) => stream.push(row));
+                    data.has_more ? get(skip + limit) : stream.push(null);
+                },
+            );
+        };
+
+        get();
 
         return stream;
     };

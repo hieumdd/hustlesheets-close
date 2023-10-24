@@ -1,7 +1,12 @@
 import { Transform } from 'node:stream';
 
 import { CreateLoadStreamConfig } from '../bigquery.service';
-import { GetExtractStream, getDimensionStream, getResourceStream } from '../close/close.service';
+import {
+    GetExtractStream,
+    getResourceStream,
+    getActivityStream,
+    getDimensionStream,
+} from '../close/close.service';
 import { Joi, timestamp, transformCustomFields, transformValidation } from './transform.utils';
 
 export type Pipeline = {
@@ -316,6 +321,93 @@ export const Opportunity: Pipeline = {
             { name: 'value_currency', type: 'STRING' },
             { name: 'value_formatted', type: 'STRING' },
             { name: 'value_period', type: 'STRING' },
+            {
+                name: 'custom',
+                type: 'RECORD',
+                mode: 'REPEATED',
+                fields: [
+                    { name: 'id', type: 'STRING' },
+                    { name: 'value', type: 'STRING' },
+                ],
+            },
+        ],
+        writeDisposition: 'WRITE_APPEND',
+    },
+};
+
+export const ActivityCustom: Pipeline = {
+    name: 'ActivityCustom',
+    getExtractStream: getActivityStream({
+        uri: 'activity/custom',
+        paramsBuilder: ({ start, end }) => ({
+            _fields: [
+                '_type',
+                'activity_at',
+                'contact_id',
+                'created_by_name',
+                'created_by',
+                'custom_activity_type_id',
+                'date_created',
+                'date_updated',
+                'id',
+                'lead_id',
+                'organization_id',
+                'status',
+                'updated_by_name',
+                'updated_by',
+                'user_id',
+                'user_name',
+                'custom',
+            ],
+            date_created__gt: start,
+            date_created__lt: end,
+        }),
+    }),
+    transforms: [
+        transformCustomFields(),
+        transformValidation(
+            Joi.object({
+                _type: Joi.string(),
+                activity_at: timestamp,
+                contact_id: Joi.string(),
+                created_by_name: Joi.string(),
+                created_by: Joi.string(),
+                custom_activity_type_id: Joi.string(),
+                date_created: timestamp,
+                date_updated: timestamp,
+                id: Joi.string(),
+                lead_id: Joi.string(),
+                organization_id: Joi.string(),
+                status: Joi.string(),
+                updated_by_name: Joi.string(),
+                updated_by: Joi.string(),
+                user_id: Joi.string(),
+                user_name: Joi.string(),
+                custom: Joi.array().items({
+                    id: Joi.string(),
+                    value: Joi.string(),
+                }),
+            }),
+        ),
+    ],
+    loadConfig: {
+        schema: [
+            { name: '_type', type: 'STRING' },
+            { name: 'activity_at', type: 'TIMESTAMP' },
+            { name: 'contact_id', type: 'STRING' },
+            { name: 'created_by_name', type: 'STRING' },
+            { name: 'created_by', type: 'STRING' },
+            { name: 'custom_activity_type_id', type: 'STRING' },
+            { name: 'date_created', type: 'TIMESTAMP' },
+            { name: 'date_updated', type: 'TIMESTAMP' },
+            { name: 'id', type: 'STRING' },
+            { name: 'lead_id', type: 'STRING' },
+            { name: 'organization_id', type: 'STRING' },
+            { name: 'status', type: 'STRING' },
+            { name: 'updated_by_name', type: 'STRING' },
+            { name: 'updated_by', type: 'STRING' },
+            { name: 'user_id', type: 'STRING' },
+            { name: 'user_name', type: 'STRING' },
             {
                 name: 'custom',
                 type: 'RECORD',
