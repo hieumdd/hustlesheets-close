@@ -11,8 +11,12 @@ export const CreatePipelineRunsRequestSchema = Joi.object<RunPipelineOptions>({
         .optional()
         .empty(null)
         .allow(null)
-        .default(dayjs.utc().subtract(7, 'day').format('YYYY-MM-DD')),
-    end: Joi.string().optional().empty(null).allow(null).default(dayjs.utc().format('YYYY-MM-DD')),
+        .default(DateTime.utc().minus({ day: 7 }).toFormat(DATE_FORMAT)),
+    end: Joi.string()
+        .optional()
+        .empty(null)
+        .allow(null)
+        .default(DateTime.utc().toFormat(DATE_FORMAT)),
 });
 
 export type RunPipelineRequest = RunPipelineOptions & { pipeline: keyof typeof pipelines };
@@ -27,6 +31,6 @@ export const RunPipelineRequestSchema = Joi.object<RunPipelineRequest>({
         .optional()
         .empty(null)
         .allow(null)
-        .default(DateTime.utc().minus({ day: 7 }).toFormat(DATE_FORMAT)),
+        .default(DateTime.utc().toFormat(DATE_FORMAT)),
     pipeline: Joi.string().valid(...Object.keys(pipelines)),
 });
