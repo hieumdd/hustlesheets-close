@@ -25,7 +25,6 @@ export const createPipelineRuns = async (options: RunPipelineOptions) => {
     return Promise.all(
         Object.keys(pipelines).map((key) => {
             const args = [
-                'dist/index.js',
                 Subcommand.EXECUTE,
                 `-p ${key}`,
                 `-s ${options.start}`,
