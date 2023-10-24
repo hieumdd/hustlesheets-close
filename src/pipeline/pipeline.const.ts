@@ -208,6 +208,7 @@ export const Lead: Pipeline = {
             },
         ],
         writeDisposition: 'WRITE_APPEND',
+        partitionField: 'date_created',
     },
 };
 
@@ -327,6 +328,7 @@ export const Opportunity: Pipeline = {
             },
         ],
         writeDisposition: 'WRITE_APPEND',
+        partitionField: 'date_created',
     },
 };
 
@@ -414,6 +416,7 @@ export const ActivityCustom: Pipeline = {
             },
         ],
         writeDisposition: 'WRITE_APPEND',
+        partitionField: 'date_created',
     },
 };
 
@@ -588,6 +591,7 @@ export const ActivityCall: Pipeline = {
             { name: 'voicemail_url', type: 'STRING' },
         ],
         writeDisposition: 'WRITE_APPEND',
+        partitionField: 'date_created',
     },
 };
 
