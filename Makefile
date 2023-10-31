@@ -1,6 +1,6 @@
 AR_REPOSITORY = docker-1
 GH_IMAGE = ghcr.io/hieumdd/hustlesheets-close:master
-AR_IMAGE = us-docker.pkg.dev/theflipsecrets/$(AR_REPOSITORY)/hustlesheets-close
+AR_IMAGE = us-docker.pkg.dev/theflipsecrets/$(AR_REPOSITORY)/hustlesheets-close:latest
 
 push-image:
 	gcloud services enable artifactregistry.googleapis.com
