@@ -60,8 +60,6 @@ It is also using the following products/services on GCP:
 
 We use Docker images for managing the solution, and will deploy it as Cloud Run Job on GCP. As of now the Docker image is hosted on Github, and when it needs to be used in deployment, we can pull from Github and push into Artifact Registry.
 
-Since it's hosted on Github, we can pull it using `docker pull`.
-
 #### Queuer
 
 The first module of the solution, its functions are generating the job request for the Executor to work on.
@@ -72,7 +70,7 @@ The second module of the solution, its functions are taking in the job requests 
 
 #### Config - Environment Variables
 
-The above modules are packed within one Docker image, with multiple configurable environment variables. Please refer to [.env.example](/.env.example).
+The above modules are packed within one Docker image, with multiple configurable environment variables. Please refer to [.env.example](.env.example).
 
 | Key | Description | Example |
 | --- | --- | --- |
@@ -132,7 +130,7 @@ There are also some configuration needed. They are declared in [Makefile](Makefi
 ### Steps
 
 1. Create a service account on the targeted GCP project. Save its key as `service-account.json` within the root directory
-2. Create the [.env](.env) file container configuring environment variables. Please refer to [.env.exmaple](.env.example).
+2. Create the [.env](.env) file container configuring environment variables. Please refer to [.env.example](.env.example).
 3. Modify the [Makefile](Makefile) as needed for deployment.
 4. Run `docker-compose run --rm gcloud make create-image` without error.
 5. Run `docker-compose run --rm gcloud make create-job` without error.
