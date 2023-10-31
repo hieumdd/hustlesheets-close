@@ -1,3 +1,6 @@
+include .env
+export
+
 PROJECT_ID = theflipsecrets
 PROJECT_NUMBER = 137964242252
 
@@ -27,16 +30,18 @@ create-image:
 create-job:
 	gcloud services enable run.googleapis.com
 
+	gcloud config set run/region us-central1
+
 	-gcloud run jobs create $(QUEUER_JOB_NAME) \
 		--image=$(AR_IMAGE) \
 		--args="queue" \
-		--region=us-central1 \
+		--set-env-vars="CLOSE_API_KEY=$(CLOSE_API_KEY),BIGQUERY_DATASET=$(BIGQUERY_DATASET)" \
 		--quiet
 
 	-gcloud run jobs create $(EXECUTOR_JOB_NAME) \
 		--image=$(AR_IMAGE) \
 		--args="" \
-		--region=us-central1 \
+		--set-env-vars="CLOSE_API_KEY=$(CLOSE_API_KEY),BIGQUERY_DATASET=$(BIGQUERY_DATASET)" \
 		--quiet
 
 create-schedule:
