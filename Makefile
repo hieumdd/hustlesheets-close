@@ -1,3 +1,6 @@
+PROJECT_ID = theflipsecrets
+PROJECT_NUMBER = 137964242252
+
 AR_REPOSITORY = docker-1
 GH_IMAGE = ghcr.io/hieumdd/hustlesheets-close:master
 AR_IMAGE = us-docker.pkg.dev/theflipsecrets/$(AR_REPOSITORY)/hustlesheets-close:latest
@@ -5,10 +8,10 @@ AR_IMAGE = us-docker.pkg.dev/theflipsecrets/$(AR_REPOSITORY)/hustlesheets-close:
 QUEUER_JOB_NAME = close-etl-queuer
 EXECUTOR_JOB_NAME = close-etl-executor
 
-create-image
+create-image:
 	gcloud services enable artifactregistry.googleapis.com
 
-	-gcloud artifacts repositories create docker-1 \
+	-gcloud artifacts repositories create $(AR_REPOSITORY) \
 		--location=us \
 		--repository-format=docker \
 		--quiet
@@ -21,7 +24,7 @@ create-image
 
 	docker push $(AR_IMAGE)
 
-create-job
+create-job:
 	gcloud services enable run.googleapis.com
 
 	-gcloud run jobs create $(QUEUER_JOB_NAME) \
@@ -44,6 +47,6 @@ create-schedule:
 		--schedule="0 0 * * *" \
 		--uri="https://us-central1-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/theflipsecrets/jobs/$(QUEUER_JOB_NAME):run" \
 		--http-method=POST \
-		--oauth-service-account-email=137964242252-compute@developer.gserviceaccount.com \
+		--oauth-service-account-email=$(PROJECT_NUMBER)-compute@developer.gserviceaccount.com \
 		--quiet
 
