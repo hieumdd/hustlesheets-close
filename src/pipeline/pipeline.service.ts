@@ -30,7 +30,7 @@ export const createPipelineRuns = async (options: RunPipelineOptions) => {
                 `-s ${options.start}`,
                 `-e ${options.end}`,
             ];
-            return runJob({ args });
+            return runJob(args);
         }),
     ).then(() => options);
 };

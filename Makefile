@@ -1,13 +1,14 @@
 include .env
 export
 
+# Change per GCP Project
 PROJECT_ID = theflipsecrets
 PROJECT_NUMBER = 137964242252
-
-AR_REPOSITORY = docker-1
-GH_IMAGE = ghcr.io/hieumdd/hustlesheets-close:master
 AR_IMAGE = us-docker.pkg.dev/theflipsecrets/$(AR_REPOSITORY)/hustlesheets-close:latest
 
+# Do not change
+AR_REPOSITORY = docker-1
+GH_IMAGE = ghcr.io/hieumdd/hustlesheets-close:master
 QUEUER_JOB_NAME = close-etl-queuer
 EXECUTOR_JOB_NAME = close-etl-executor
 
