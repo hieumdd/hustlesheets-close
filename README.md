@@ -1,5 +1,22 @@
 # Hustlesheets Close API ETL
 
+- [Hustlesheets Close API ETL](#hustlesheets-close-api-etl)
+  - [Architecture](#architecture)
+  - [Components](#components)
+    - [Source Code](#source-code)
+      - [Image](#image)
+      - [Queuer](#queuer)
+      - [Executor](#executor)
+      - [Config - Environment Variables](#config---environment-variables)
+    - [Scheduler](#scheduler)
+    - [Admin](#admin)
+  - [Entrypoints](#entrypoints)
+    - [`app`](#app)
+    - [`gcloud`](#gcloud)
+  - [Deployment](#deployment)
+    - [Prequisites](#prequisites)
+    - [Steps](#steps)
+
 ## Architecture
 
 ```mermaid
