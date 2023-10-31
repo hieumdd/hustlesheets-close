@@ -36,7 +36,7 @@ export const getIncrementalStream = ({ uri, paramsBuilder }: GetIncrementalStrea
             DateTime.fromFormat(options.end, DATE_FORMAT),
         )
             .splitBy({ day: 1 })
-            .map((date) => ({
+            .map((date: Interval) => ({
                 start: (<DateTime>date.start).toFormat(DATE_FORMAT),
                 end: (<DateTime>date.end).toFormat(DATE_FORMAT),
             }))
