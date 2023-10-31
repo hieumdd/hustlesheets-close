@@ -12,11 +12,7 @@ export const CreatePipelineRunsRequestSchema = Joi.object<RunPipelineOptions>({
         .empty(null)
         .allow(null)
         .default(DateTime.utc().minus({ day: 7 }).toFormat(DATE_FORMAT)),
-    end: Joi.string()
-        .optional()
-        .empty(null)
-        .allow(null)
-        .default(DateTime.utc().toFormat(DATE_FORMAT)),
+    end: Joi.string().optional().empty(null).allow(null).default(DateTime.utc().toFormat(DATE_FORMAT)),
 });
 
 export type RunPipelineRequest = RunPipelineOptions & { pipeline: keyof typeof pipelines };
@@ -27,10 +23,6 @@ export const RunPipelineRequestSchema = Joi.object<RunPipelineRequest>({
         .empty(null)
         .allow(null)
         .default(DateTime.utc().minus({ day: 7 }).toFormat(DATE_FORMAT)),
-    end: Joi.string()
-        .optional()
-        .empty(null)
-        .allow(null)
-        .default(DateTime.utc().toFormat(DATE_FORMAT)),
+    end: Joi.string().optional().empty(null).allow(null).default(DateTime.utc().toFormat(DATE_FORMAT)),
     pipeline: Joi.string().valid(...Object.keys(pipelines)),
 });

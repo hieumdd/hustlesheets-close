@@ -4,10 +4,7 @@ import { logger } from './logging.service';
 import { Subcommand } from './subcommand.enum';
 import * as pipelines from './pipeline/pipeline.const';
 import { createPipelineRuns, runPipeline } from './pipeline/pipeline.service';
-import {
-    CreatePipelineRunsRequestSchema,
-    RunPipelineRequestSchema,
-} from './pipeline/pipeline.request.dto';
+import { CreatePipelineRunsRequestSchema, RunPipelineRequestSchema } from './pipeline/pipeline.request.dto';
 
 ['SIGINT', 'SIGTERM'].forEach((signal) => {
     process.on(signal, () => {

@@ -24,12 +24,7 @@ export const createPipelineRuns = async (options: RunPipelineOptions) => {
 
     return Promise.all(
         Object.keys(pipelines).map((key) => {
-            const args = [
-                Subcommand.EXECUTE,
-                `-p ${key}`,
-                `-s ${options.start}`,
-                `-e ${options.end}`,
-            ];
+            const args = [Subcommand.EXECUTE, `-p ${key}`, `-s ${options.start}`, `-e ${options.end}`];
             return runJob(args);
         }),
     ).then(() => options);
