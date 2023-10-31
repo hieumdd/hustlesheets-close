@@ -97,7 +97,7 @@ The core ETL module. We can use it for the Queuer or the Executor.
 | Command | Description |
 | --- | --- |
 | `docker-compose run --rm app queue -s YYYY-MM-DD -e YYYY-MM-DD` | Create jobs on the executor |
-| `docker-compose run --rm app execute -p Lead -s YYYY-MM-DD -e YYYY-MM-DD` | Execute job on the executor |
+| `docker-compose run --rm app execute -p Lead -s YYYY-MM-DD -e YYYY-MM-DD` | Execute job |
 
 ### `gcloud`
 
@@ -134,6 +134,7 @@ There are also some configuration needed. They are declared in [Makefile](Makefi
 3. Modify the [Makefile](Makefile) as needed for deployment.
 4. Run `docker-compose run --rm gcloud make create-image` without error.
 5. Run `docker-compose run --rm gcloud make create-job` without error.
-6. Run `docker-compose run --rm app queue -s YYYY-MM-DD -e YYYY-MM-DD` as a test for queueing job requests.
-7. Run `docker-compose run --rm gcloud make create-schedule` without error.
-8. Verify everything on GCP console.
+6. Create a BigQuery Dataset for Close data. Make sure that the name matches what's on [.env](.env).
+7. Run `docker-compose run --rm app queue -s YYYY-MM-DD -e YYYY-MM-DD` as a test for queueing job requests.
+8. Run `docker-compose run --rm gcloud make create-schedule` without error.
+9. Verify everything on GCP console.
